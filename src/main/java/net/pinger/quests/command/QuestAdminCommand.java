@@ -14,7 +14,7 @@ public class QuestAdminCommand {
         this.playerQuestsPlugin = playerQuestsPlugin;
     }
 
-    @Command(name = "questsadmin", desc = "The admin command for quests")
+    @Command(name = "", desc = "The admin command for quests")
     @Require("quests.admin")
     public void openQuestMenu(@Sender Player sender) {
         final InventoryManager manager = this.playerQuestsPlugin.getInventoryManager();

@@ -1,23 +1,26 @@
-package net.pinger.quests.quest;
+package net.pinger.quests.quest.handler;
 
 import java.util.function.UnaryOperator;
 import net.pinger.quests.PlayerQuestsPlugin;
 import net.pinger.quests.manager.PlayerQuestManager;
 import net.pinger.quests.player.QuestPlayer;
+import net.pinger.quests.quest.Quest;
+import net.pinger.quests.quest.QuestProgress;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
 public abstract class QuestHandler implements Listener {
     private final PlayerQuestsPlugin playerQuestsPlugin;
     private final PlayerQuestManager playerQuestManager;
-    private final Quest quest;
     private final int goal;
 
-    protected QuestHandler(PlayerQuestsPlugin playerQuestsPlugin, Quest quest, int goal) {
+    protected final Quest quest;
+
+    protected QuestHandler(PlayerQuestsPlugin playerQuestsPlugin, Quest quest) {
         this.playerQuestsPlugin = playerQuestsPlugin;
         this.playerQuestManager = playerQuestsPlugin.getPlayerQuestManager();
         this.quest = quest;
-        this.goal = goal;
+        this.goal = quest.getGoal();
     }
 
     public void handle(Player player, UnaryOperator<Integer> modifier) {

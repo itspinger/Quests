@@ -1,19 +1,17 @@
 package net.pinger.quests.quest.data;
 
+import java.util.List;
+
 public abstract class QuestData {
     private final QuestDataType questDataType;
-    private final int goal;
 
-    protected QuestData(QuestDataType questDataType, int goal) {
+    protected QuestData(QuestDataType questDataType) {
         this.questDataType = questDataType;
-        this.goal = goal;
     }
+
+    public abstract List<String> getDescription();
 
     public QuestDataType getQuestDataType() {
         return this.questDataType;
-    }
-
-    public int getGoal() {
-        return this.goal;
     }
 }

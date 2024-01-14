@@ -1,0 +1,3 @@
+name: Quests
+main: net.pinger.quests.PlayerQuestsPlugin
+version: 1.0

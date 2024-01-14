@@ -1,23 +1,27 @@
 package net.pinger.quests.quest.data;
 
-import org.bukkit.Material;
+import java.util.Arrays;
+import java.util.List;
+import net.pinger.quests.item.XMaterial;
 
 public class BlockData extends QuestData {
-    private final Material material;
-    private final int data;
+    private final XMaterial material;
 
-    public BlockData(int goal, Material material, int data) {
-        super(QuestDataType.BLOCK_DATA, goal);
+    public BlockData(XMaterial material) {
+        super(QuestDataType.BLOCK_DATA);
 
         this.material = material;
-        this.data = data;
     }
 
-    public Material getMaterial() {
+    @Override
+    public List<String> getDescription() {
+        return Arrays.asList(
+            "&7Block: &b".concat(this.material == null ? "Any" : this.material.toString()),
+            "&7Block Data: &b".concat(this.material == null ? "Any" : String.valueOf(this.material.getData()))
+        );
+    }
+
+    public XMaterial getMaterial() {
         return this.material;
-    }
-
-    public int getData() {
-        return this.data;
     }
 }

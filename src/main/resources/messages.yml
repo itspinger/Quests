@@ -1,0 +1,8 @@
+quest-create: "&aSpecify a unique name for the new quest!"
+quest-exists: "&cQuest with this name already exists!"
+quest-change-icon: "&aTo change the quest icon, hold the item in the hand and type\n &eConfirm &aor &eDone &ato confirm or &eReturn &ato 
+cancel!"
+quest-icon-invalid: "&cThis icon is invalid! Choose another"
+quest-block-prompt: "&aType a block name to set as the quest or &e\"Any\" &afor any block"
+quest-progress-goal: "&aSet the progress goal for this quest (e.g &e20&a)"
+unknown-material: "&cCouldn't find material with this name!"

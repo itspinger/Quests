@@ -1,19 +1,20 @@
 package net.pinger.quests.quest.handler;
 
 import net.pinger.quests.PlayerQuestsPlugin;
+import net.pinger.quests.item.XMaterial;
 import net.pinger.quests.quest.Quest;
 import net.pinger.quests.quest.data.BlockData;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 
-public class BreakQuest extends QuestHandler {
+public class PlaceQuest extends QuestHandler {
     private final Material material;
     private final int data;
 
-    public BreakQuest(PlayerQuestsPlugin playerQuestsPlugin, Quest quest) {
+    public PlaceQuest(PlayerQuestsPlugin playerQuestsPlugin, Quest quest) {
         super(playerQuestsPlugin, quest);
 
         final BlockData data = quest.getData();
@@ -22,7 +23,7 @@ public class BreakQuest extends QuestHandler {
     }
 
     @EventHandler
-    public void onBreak(BlockBreakEvent event) {
+    public void onPlace(BlockPlaceEvent event) {
         final Player player = event.getPlayer();
         if (this.material == null) { // If the material is null, we listen to any block break
             this.handle(player, (value) -> value + 1);
