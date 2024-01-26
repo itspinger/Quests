@@ -5,19 +5,20 @@ import net.pinger.quests.file.configuration.MessageConfiguration;
 import net.pinger.quests.item.XMaterial;
 import net.pinger.quests.quest.Quest;
 import net.pinger.quests.quest.data.BlockData;
+import org.bukkit.Material;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
 import org.bukkit.conversations.StringPrompt;
 import org.bukkit.entity.Player;
 
 public class CreateBlockQuestPrompt extends StringPrompt {
-    private final PlayerQuestsPlugin playerQuestsPlugin;
+    private final PlayerQuestsPlugin plugin;
     private final MessageConfiguration configuration;
     private final Quest quest;
 
-    public CreateBlockQuestPrompt(PlayerQuestsPlugin playerQuestsPlugin, Quest quest) {
-        this.playerQuestsPlugin = playerQuestsPlugin;
-        this.configuration = playerQuestsPlugin.getConfiguration();
+    public CreateBlockQuestPrompt(PlayerQuestsPlugin plugin, Quest quest) {
+        this.plugin = plugin;
+        this.configuration = plugin.getConfiguration();
         this.quest = quest;
     }
 
@@ -44,11 +45,22 @@ public class CreateBlockQuestPrompt extends StringPrompt {
                 this.configuration.send(player, "unknown-material");
                 return this;
             }
+
+            final Material mat = material.parseMaterial();
+            if (mat == null) {
+                this.configuration.send(player, "unknown-material");
+                return this;
+            }
+
+            if (!mat.isSolid()) {
+                this.configuration.send(player, "block-not-solid");
+                return this;
+            }
         }
 
         final BlockData data = new BlockData(material);
         this.quest.setQuestData(data);
-        this.playerQuestsPlugin.getInventoryManager().getQuestProvider(this.quest).open(player);
+        this.plugin.getInventoryManager().getEditQuestProvider(this.quest).open(player);
 
         return Prompt.END_OF_CONVERSATION;
     }

@@ -6,7 +6,6 @@ import io.pnger.gui.pagination.GuiPagination;
 import io.pnger.gui.provider.GuiProvider;
 import io.pnger.gui.slot.GuiIteratorType;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import net.pinger.quests.PlayerQuestsPlugin;
 import net.pinger.quests.conversation.ConversationManager;
@@ -42,7 +41,7 @@ public class QuestsProvider implements GuiProvider {
         for (final Quest quest : quests) {
             // Get the item from the group
             items[i++] = GuiItem.of(this.getItemStack(quest), e -> {
-                this.playerQuestsPlugin.getInventoryManager().getQuestProvider(quest).open(player);
+                this.playerQuestsPlugin.getInventoryManager().getEditQuestProvider(quest).open(player);
             });
         }
 
@@ -86,7 +85,7 @@ public class QuestsProvider implements GuiProvider {
 
         final QuestType type = quest.getQuestType();
         desc.add("&b❙ Type");
-        desc.add(type == null ? "&fNot set" : "&fl" + type.name());
+        desc.add(type == null ? "&fNot set" : "&f" + type.getName());
         desc.add("");
 
         final QuestData data = quest.getQuestData();

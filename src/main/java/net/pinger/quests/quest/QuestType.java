@@ -16,40 +16,40 @@ public enum QuestType {
         XMaterial.DIAMOND_PICKAXE,
         CreateBlockQuestPrompt::new,
         BreakQuest::new,
-        "&7Break certain blocks in order to",
-        "&7progress on the quest"
+        "&fBreak certain blocks in order to",
+        "&fprogress on the quest"
     ),
     BLOCK_PLACE(
         "Block Place Quest",
         XMaterial.IRON_BLOCK,
         CreateBlockQuestPrompt::new,
         PlaceQuest::new,
-        "&7Place certain blocks in order to",
-        "&7progress on the quest"
+        "&fPlace certain blocks in order to",
+        "&fprogress on the quest"
     ),
     PLAYER_KILL(
         "Player Kill Quest",
         XMaterial.DIAMOND_SWORD,
         null,
         null,
-        "&7Kill players in order to progress",
-        "&7on the quest"
+        "&fKill players in order to progress",
+        "&fon the quest"
     ),
     MOB_KILL(
         "Mob Kill Quest",
         XMaterial.IRON_SWORD,
         null,
         null,
-        "&7Kill mobs in order to progress",
-        "&7on the quest"
+        "&fKill mobs in order to progress",
+        "&fon the quest"
     ),
     GO_TO_WORLD(
         "Go to World Quest",
         XMaterial.ENDER_EYE,
         null,
         null,
-        "&7Change the world in order to",
-        "&7progress on the quest"
+        "&fChange the world in order to",
+        "&fprogress on the quest"
     );
 
     private final String name;

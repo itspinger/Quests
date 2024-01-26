@@ -68,7 +68,7 @@ public class Quest {
     }
 
     public void setDescription(List<String> description) {
-        this.description = description;
+        this.description = new ArrayList<>(description);
     }
 
     public XMaterial getMaterial() {

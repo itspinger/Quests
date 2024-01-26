@@ -46,7 +46,7 @@ public class ChangeQuestIconPrompt extends StringPrompt {
 
         final XMaterial material = XMaterial.matchXMaterial(item);
         this.quest.setMaterial(material);
-        this.playerQuestsPlugin.getInventoryManager().getQuestProvider(this.quest).open(player);
+        this.playerQuestsPlugin.getInventoryManager().getEditQuestProvider(this.quest).open(player);
 
         return Prompt.END_OF_CONVERSATION;
     }

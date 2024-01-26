@@ -16,8 +16,8 @@ public class BlockData extends QuestData {
     @Override
     public List<String> getDescription() {
         return Arrays.asList(
-            "&7Block: &b".concat(this.material == null ? "Any" : this.material.toString()),
-            "&7Block Data: &b".concat(this.material == null ? "Any" : String.valueOf(this.material.getData()))
+            "&fBlock: &b".concat(this.material == null ? "Any" : this.material.toString()),
+            "&fBlock Data: &b".concat(this.material == null ? "Any" : String.valueOf(this.material.getData()))
         );
     }
 

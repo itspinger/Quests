@@ -25,7 +25,7 @@ public class ConversationManager {
      */
 
     public void createConversation(Player player, Prompt prompt) {
-        this.createConversation(player, prompt, 15);
+        this.createConversation(player, prompt, 45);
     }
 
     /**

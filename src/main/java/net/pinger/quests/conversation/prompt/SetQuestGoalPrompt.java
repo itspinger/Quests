@@ -3,10 +3,10 @@ package net.pinger.quests.conversation.prompt;
 import net.pinger.quests.PlayerQuestsPlugin;
 import net.pinger.quests.file.configuration.MessageConfiguration;
 import net.pinger.quests.quest.Quest;
-import net.pinger.quests.quest.QuestType;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.NumericPrompt;
 import org.bukkit.conversations.Prompt;
+import org.bukkit.entity.Player;
 
 public class SetQuestGoalPrompt extends NumericPrompt {
     private final PlayerQuestsPlugin playerQuestsPlugin;
@@ -31,8 +31,10 @@ public class SetQuestGoalPrompt extends NumericPrompt {
             return this;
         }
 
-        final QuestType type = this.quest.getQuestType();
+        final Player player = (Player) conversationContext.getForWhom();
         this.quest.setGoal(goal);
-        return type.createPrompt(this.playerQuestsPlugin, this.quest);
+        this.playerQuestsPlugin.getInventoryManager().getEditQuestProvider(this.quest).open(player);
+
+        return Prompt.END_OF_CONVERSATION;
     }
 }

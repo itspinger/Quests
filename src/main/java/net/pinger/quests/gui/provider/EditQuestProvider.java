@@ -5,9 +5,13 @@ import io.pnger.gui.item.GuiItem;
 import io.pnger.gui.provider.GuiProvider;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import net.pinger.quests.PlayerQuestsPlugin;
 import net.pinger.quests.conversation.ConversationManager;
 import net.pinger.quests.conversation.prompt.ChangeQuestIconPrompt;
+import net.pinger.quests.conversation.prompt.SetQuestDescriptionPrompt;
+import net.pinger.quests.conversation.prompt.SetQuestGoalPrompt;
 import net.pinger.quests.gui.InventoryManager;
 import net.pinger.quests.item.ItemBuilder;
 import net.pinger.quests.item.XMaterial;
@@ -55,6 +59,27 @@ public class EditQuestProvider implements GuiProvider {
             }
         ));
 
+        contents.setItem(2, 4, GuiItem.of(
+            this.getRewards().build(),
+            e -> {
+                this.playerQuestsPlugin.getInventoryManager().getQuestRewardsProvider(this.quest).open(player);
+            }
+        ));
+
+        contents.setItem(2, 5, GuiItem.of(
+            this.getDescription().build(),
+            e -> {
+                this.conversationManager.createConversation(player, new SetQuestDescriptionPrompt(this.playerQuestsPlugin, this.quest));
+            }
+        ));
+
+        contents.setItem(3, 4, GuiItem.of(
+            this.getGoal().build(),
+            e -> {
+                this.conversationManager.createConversation(player, new SetQuestGoalPrompt(this.playerQuestsPlugin, this.quest));
+            }
+        ));
+
         InventoryManager.addReturnButton(5, 4, contents);
     }
 
@@ -69,12 +94,62 @@ public class EditQuestProvider implements GuiProvider {
         final List<String> lore = new ArrayList<>();
         lore.add("");
         lore.add("&b❙ Quest Type");
-        lore.add(this.quest.getQuestType().getName());
+        lore.add("&f" + this.quest.getQuestType().getName());
         lore.add("");
         lore.add("&b❙ Quest Data");
         lore.addAll(this.quest.getQuestData().getDescription());
         lore.add("&fGoal: &b" + this.quest.getGoal());
 
         return builder.lore(lore);
+    }
+
+    private ItemBuilder getRewards() {
+        final ItemBuilder builder = new ItemBuilder(XMaterial.PAPER);
+        builder.name("&b&lQuest Rewards");
+
+        final List<String> lore = new ArrayList<>();
+        lore.add("&7Click here to edit the rewards");
+        lore.add("");
+        lore.add("&b❙ Rewards");
+        if (this.quest.getRewards().isEmpty()) {
+            lore.add("&fNone");
+        } else {
+            final Set<String> mapped = this.quest.getRewards()
+                .stream()
+                .map(reward -> "&f" + reward.getDisplayName())
+                .collect(Collectors.toSet());
+
+            lore.addAll(mapped);
+        }
+
+        return builder.lore(lore);
+    }
+
+    private ItemBuilder getDescription() {
+        final ItemBuilder builder = new ItemBuilder(XMaterial.MAP);
+        builder.name("&b&lQuest Description");
+
+        final List<String> lore = new ArrayList<>();
+        lore.add("&7Click to change the description of this quest");
+        lore.add("");
+        lore.add("&b❙ Description");
+        if (this.quest.getDescription().isEmpty()) {
+            lore.add("&fNone");
+        } else {
+            lore.addAll(this.quest.getDescription());
+        }
+
+        return builder.lore(lore);
+    }
+
+    private ItemBuilder getGoal() {
+        return new ItemBuilder(XMaterial.DIAMOND)
+            .name("&b&lQuest Goal")
+            .lore(
+                "&7Click to change the goal of this quest",
+                "",
+                "&b❙ Goal",
+                "&f" + this.quest.getGoal()
+            );
     }
 }

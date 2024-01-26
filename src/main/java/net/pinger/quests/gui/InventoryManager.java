@@ -8,38 +8,40 @@ import io.pnger.gui.manager.GuiManager;
 import io.pnger.gui.pagination.GuiPagination;
 import net.pinger.quests.PlayerQuestsPlugin;
 import net.pinger.quests.gui.provider.EditQuestProvider;
-import net.pinger.quests.gui.provider.PlayerQuestsProvider;
+import net.pinger.quests.gui.provider.EditQuestRewardProvider;
+import net.pinger.quests.gui.provider.QuestRewardsProvider;
 import net.pinger.quests.gui.provider.QuestTypeProvider;
 import net.pinger.quests.gui.provider.QuestsProvider;
 import net.pinger.quests.item.ItemBuilder;
 import net.pinger.quests.item.XMaterial;
 import net.pinger.quests.quest.Quest;
+import net.pinger.quests.reward.QuestReward;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 public class InventoryManager {
-    private final PlayerQuestsPlugin playerQuestsPlugin;
+    private final PlayerQuestsPlugin plugin;
     private final GuiManager manager;
 
-    public InventoryManager(PlayerQuestsPlugin playerQuestsPlugin) {
-        this.playerQuestsPlugin = playerQuestsPlugin;
-        this.manager = new GuiManager(this.playerQuestsPlugin);
+    public InventoryManager(PlayerQuestsPlugin plugin) {
+        this.plugin = plugin;
+        this.manager = new GuiManager(this.plugin);
     }
 
     public GuiInventory getQuestsProvider() {
         return GuiBuilder.of()
             .manager(this.manager)
-            .provider(new QuestsProvider(this.playerQuestsPlugin))
+            .provider(new QuestsProvider(this.plugin))
             .title("&8Available Quests")
             .build();
     }
 
-    public GuiInventory getQuestProvider(Quest quest) {
+    public GuiInventory getEditQuestProvider(Quest quest) {
         return GuiBuilder.of()
             .manager(this.manager)
-            .provider(new EditQuestProvider(this.playerQuestsPlugin, quest))
+            .provider(new EditQuestProvider(this.plugin, quest))
             .title("&8Edit Quest > " + quest.getName())
             .build();
     }
@@ -47,9 +49,27 @@ public class InventoryManager {
     public GuiInventory getQuestTypeProvider(Quest quest) {
         return GuiBuilder.of()
             .manager(this.manager)
-            .provider(new QuestTypeProvider(this.playerQuestsPlugin, quest))
+            .provider(new QuestTypeProvider(this.plugin, quest))
             .size(4, 9)
             .title(String.format("&8%s > Set Quest Type", quest.getName()))
+            .build();
+    }
+
+    public GuiInventory getQuestRewardsProvider(Quest quest) {
+        return GuiBuilder.of()
+            .manager(this.manager)
+            .provider(new QuestRewardsProvider(this.plugin, quest))
+            .size(6, 9)
+            .title(String.format("&8%s > Reward", quest.getName()))
+            .build();
+    }
+
+    public GuiInventory getEditRewardProvider(QuestReward reward) {
+        return GuiBuilder.of()
+            .manager(this.manager)
+            .provider(new EditQuestRewardProvider(this.plugin, reward))
+            .size(4, 9)
+            .title("&8Edit Reward")
             .build();
     }
 

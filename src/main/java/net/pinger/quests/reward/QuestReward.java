@@ -7,6 +7,8 @@ public class QuestReward {
     private String displayName;
     private String command;
 
+    public QuestReward() {}
+
     public QuestReward(String displayName, String command) {
         this.displayName = displayName;
         this.command = command;
@@ -28,7 +30,15 @@ public class QuestReward {
         return this.displayName;
     }
 
+    public boolean isValid() {
+        return this.displayName != null && this.command != null;
+    }
+
     public void execute(Player player) {
+        if (this.command == null) {
+            return;
+        }
+
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), this.command.replace("{player}", player.getName()));
     }
 }

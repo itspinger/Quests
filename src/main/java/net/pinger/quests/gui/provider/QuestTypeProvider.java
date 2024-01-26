@@ -6,13 +6,9 @@ import io.pnger.gui.pagination.GuiPagination;
 import io.pnger.gui.provider.GuiProvider;
 import io.pnger.gui.slot.GuiIteratorType;
 import io.pnger.gui.slot.GuiSlotIterator;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 import net.pinger.quests.PlayerQuestsPlugin;
 import net.pinger.quests.conversation.ConversationManager;
-import net.pinger.quests.conversation.prompt.SetQuestGoalPrompt;
 import net.pinger.quests.gui.InventoryManager;
 import net.pinger.quests.item.ItemBuilder;
 import net.pinger.quests.quest.Quest;
@@ -38,7 +34,7 @@ public class QuestTypeProvider implements GuiProvider {
         final GuiItem[] items = Arrays.stream(questTypes)
             .map(type -> GuiItem.of(this.getFromQuestType(type).build(), e -> {
                 this.quest.setQuestType(type);
-                this.conversationManager.createConversation(player, new SetQuestGoalPrompt(this.playerQuestsPlugin, this.quest));
+                this.conversationManager.createConversation(player, type.createPrompt(this.playerQuestsPlugin, this.quest));
             }))
             .toArray(GuiItem[]::new);
 

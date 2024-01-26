@@ -15,7 +15,7 @@ public class PlayerData extends QuestData {
     @Override
     public List<String> getDescription() {
         return List.of(
-            "&7Player: &b".concat(this.id == null ? "Any" : this.id.toString())
+            "&fPlayer: &b".concat(this.id == null ? "Any" : this.id.toString())
         );
     }
 

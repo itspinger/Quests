@@ -8,17 +8,16 @@ import net.pinger.quests.gui.InventoryManager;
 import org.bukkit.entity.Player;
 
 public class QuestAdminCommand {
-    private final PlayerQuestsPlugin playerQuestsPlugin;
+    private final PlayerQuestsPlugin plugin;
 
-    public QuestAdminCommand(PlayerQuestsPlugin playerQuestsPlugin) {
-        this.playerQuestsPlugin = playerQuestsPlugin;
+    public QuestAdminCommand(PlayerQuestsPlugin plugin) {
+        this.plugin = plugin;
     }
 
     @Command(name = "", desc = "The admin command for quests")
     @Require("quests.admin")
     public void openQuestMenu(@Sender Player sender) {
-        final InventoryManager manager = this.playerQuestsPlugin.getInventoryManager();
-        manager.getQuestsProvider().open(sender);
+        this.plugin.getInventoryManager().getQuestsProvider().open(sender);
     }
 
 }
