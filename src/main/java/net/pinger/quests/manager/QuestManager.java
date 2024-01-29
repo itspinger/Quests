@@ -1,35 +1,33 @@
 package net.pinger.quests.manager;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import net.pinger.quests.PlayerQuestsPlugin;
 import net.pinger.quests.quest.Quest;
-import net.pinger.quests.quest.data.QuestDataType;
+import org.bukkit.Bukkit;
 
 public class QuestManager {
-    private final List<Quest> quests;
+    private final Map<Integer, Quest> quests;
+    private final List<Quest> unsavedQuests;
+    private final PlayerQuestsPlugin plugin;
 
-    public QuestManager() {
-        this.quests = new ArrayList<>();
+    public QuestManager(PlayerQuestsPlugin plugin) {
+        this.plugin = plugin;
+        this.quests = Collections.synchronizedMap(new HashMap<>());
+        this.unsavedQuests = new ArrayList<>();
+
+        this.loadQuestsTask();
     }
 
-    public void load() {
-        // TODO:
-    }
-
-    public void save(Quest quest) {
-        // TODO
-    }
-
-    public void addQuest(Quest quest) {
-        this.quests.add(quest);
-    }
-
-    public void removeQuest(Quest quest) {
-        this.quests.remove(quest);
+    public Quest getQuest(int id) {
+        return this.quests.get(id);
     }
 
     public Quest getQuest(String name) {
-        for (final Quest quest : this.getQuests()) {
+        for (final Quest quest : this.unsavedQuests) {
             if (quest.getName().equalsIgnoreCase(name)) {
                 return quest;
             }
@@ -38,7 +36,22 @@ public class QuestManager {
         return null;
     }
 
-    public List<Quest> getQuests() {
-        return this.quests;
+    public void addQuest(Quest quest) {
+        this.unsavedQuests.add(quest);
+    }
+
+    public void removeQuest(Quest quest) {
+        this.unsavedQuests.remove(quest);
+    }
+
+    public void loadQuests(Map<Integer, Quest> quests) {
+        this.quests.clear();
+        this.quests.putAll(quests);
+    }
+
+    private void loadQuestsTask() {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this.plugin, () -> {
+            this.plugin.getStorage().loadAllQuests().join();
+        }, 20L, 20L * 60L * 10);
     }
 }

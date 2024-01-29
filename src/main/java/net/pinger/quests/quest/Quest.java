@@ -13,17 +13,23 @@ public class Quest {
     private final String name;
     private final List<QuestReward> rewards;
 
+    private int id;
     private XMaterial material;
     private List<String> description;
     private int goal;
     private QuestType questType;
     private QuestData questData;
 
-    public Quest(String name) {
+    public Quest(int id, String name, int goal) {
+        this.id = id;
         this.name = name;
         this.material = XMaterial.SUNFLOWER;
         this.description = new ArrayList<>();
         this.rewards = new ArrayList<>();
+    }
+
+    public Quest(String name) {
+        this(-1, name, 0);
     }
 
     public void addReward(QuestReward reward) {
@@ -83,6 +89,10 @@ public class Quest {
         return this.rewards;
     }
 
+    public void setRewards(List<QuestReward> rewards) {
+        this.rewards.addAll(rewards);
+    }
+
     public QuestType getQuestType() {
         return this.questType;
     }
@@ -105,5 +115,13 @@ public class Quest {
 
     public void setGoal(int goal) {
         this.goal = goal;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return this.id;
     }
 }

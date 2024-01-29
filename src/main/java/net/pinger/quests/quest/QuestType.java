@@ -58,12 +58,28 @@ public enum QuestType {
     private final BiFunction<PlayerQuestsPlugin, Quest, QuestHandler> questHandlerFunction;
     private final String[] description;
 
-    QuestType(String name, XMaterial material, BiFunction<PlayerQuestsPlugin, Quest, Prompt> promptFunction, BiFunction<PlayerQuestsPlugin, Quest, QuestHandler> questHandlerFunction, String... description) {
+    QuestType(
+        String name,
+        XMaterial material,
+        BiFunction<PlayerQuestsPlugin, Quest, Prompt> promptFunction,
+        BiFunction<PlayerQuestsPlugin, Quest, QuestHandler> questHandlerFunction,
+        String... description
+    ) {
         this.name = name;
         this.material = material;
         this.promptFunction = promptFunction;
         this.questHandlerFunction = questHandlerFunction;
         this.description = description;
+    }
+
+    public static QuestType of(String name) {
+        for (final QuestType type : values()) {
+            if (type.getName().equalsIgnoreCase(name)) {
+                return type;
+            }
+        }
+
+        return null;
     }
 
     public String getName() {

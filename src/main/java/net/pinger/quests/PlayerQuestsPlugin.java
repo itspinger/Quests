@@ -9,6 +9,7 @@ import net.pinger.quests.gui.InventoryManager;
 import net.pinger.quests.listener.PlayerListener;
 import net.pinger.quests.manager.PlayerQuestManager;
 import net.pinger.quests.manager.QuestManager;
+import net.pinger.quests.storage.Storage;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -21,7 +22,7 @@ public class PlayerQuestsPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        this.questManager = new QuestManager();
+        this.questManager = new QuestManager(this);
         this.configuration = new MessageConfiguration(this);
         this.inventoryManager = new InventoryManager(this);
         this.playerQuestManager = new PlayerQuestManager(this);
@@ -53,5 +54,9 @@ public class PlayerQuestsPlugin extends JavaPlugin {
 
     public QuestManager getQuestManager() {
         return this.questManager;
+    }
+
+    public Storage getStorage() {
+        return null;
     }
 }

@@ -61,6 +61,13 @@
             <artifactId>gui</artifactId>
             <version>2.0.0</version>
         </dependency>
+
+        <!-- Hikari -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>4.0.3</version>
+        </dependency>
     </dependencies>
 
 </project>

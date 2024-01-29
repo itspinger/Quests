@@ -4,12 +4,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class QuestReward {
+    private int id = -1;
+
     private String displayName;
     private String command;
 
     public QuestReward() {}
 
-    public QuestReward(String displayName, String command) {
+    public QuestReward(int id, String displayName, String command) {
+        this.id = id;
         this.displayName = displayName;
         this.command = command;
     }
@@ -22,12 +25,20 @@ public class QuestReward {
         this.command = command;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getCommand() {
         return this.command;
     }
 
     public String getDisplayName() {
         return this.displayName;
+    }
+
+    public int getId() {
+        return this.id;
     }
 
     public boolean isValid() {

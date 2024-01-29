@@ -15,8 +15,12 @@ public class QuestPlayer {
     private Quest activeQuest;
 
     public QuestPlayer(UUID id) {
+        this(id, new HashMap<>());
+    }
+
+    public QuestPlayer(UUID id, Map<Quest, QuestProgress> questsMap) {
         this.id = id;
-        this.questsMap = new HashMap<>();
+        this.questsMap = questsMap;
     }
 
     public UUID getId() {
@@ -41,5 +45,14 @@ public class QuestPlayer {
 
     public Player getPlayer() {
         return Bukkit.getPlayer(this.id);
+    }
+
+    public String getName() {
+        final Player player = this.getPlayer();
+        if (player == null) {
+            return null;
+        }
+
+        return player.getName();
     }
 }
