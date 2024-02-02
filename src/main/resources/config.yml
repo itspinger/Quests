@@ -1,0 +1,16 @@
+# +----------------------------------------------------------------------------------------------+ #
+# |                                                                                              | #
+# |                                      STORAGE SETTINGS                                        | #
+# |                                                                                              | #
+# |                       Defines how the plugin should interact with the database               | #
+# |                                                                                              | #
+# +----------------------------------------------------------------------------------------------+ #
+
+# These are basic settings allowing us to successfully connect to a database.
+# - In order to apply this, "database.enabled" key must be set to true.
+# - Make sure to correct the credentials, in order to avoid any errors. (For example wrong password, or hostname)
+database:
+  enabled: false
+  host: "localhost:3306/hynick"
+  username: "root"
+  password: ""

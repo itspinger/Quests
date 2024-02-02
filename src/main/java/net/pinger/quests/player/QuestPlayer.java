@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 public class QuestPlayer {
     private final UUID id;
     private final Map<Quest, QuestProgress> questsMap;
-    private Quest activeQuest;
 
     public QuestPlayer(UUID id) {
         this(id, new HashMap<>());
@@ -31,16 +30,22 @@ public class QuestPlayer {
         return this.questsMap;
     }
 
+    public QuestProgress getProgress(Quest quest) {
+        return this.questsMap.compute(quest, ($, progress) -> {
+            if (progress != null) {
+                return progress;
+            }
+
+            return new QuestProgress(0, false, false);
+        });
+    }
+
     public void modifyQuests(Consumer<Map<Quest, QuestProgress>> consumer) {
         consumer.accept(this.getQuestsMap());
     }
 
     public boolean isActiveQuest(Quest quest) {
-        if (this.activeQuest == null) {
-            return false;
-        }
-
-        return this.activeQuest.equals(quest);
+        return this.getProgress(quest).isActive();
     }
 
     public Player getPlayer() {

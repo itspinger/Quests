@@ -6,13 +6,15 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.TimeZone;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import net.pinger.quests.PlayerQuestsPlugin;
+import net.pinger.quests.player.QuestPlayer;
+import net.pinger.quests.quest.Quest;
+import net.pinger.quests.reward.QuestReward;
 import net.pinger.quests.storage.credentials.StorageCredentials;
 import net.pinger.quests.storage.implementation.StorageImplementation;
 import net.pinger.quests.storage.implementation.sql.SqlStorage;
@@ -79,6 +81,38 @@ public class Storage {
     public CompletableFuture<Void> loadAllQuests() {
         return this.future(() -> {
             this.implementation.loadAllQuests();
+            return null;
+        });
+    }
+
+    public CompletableFuture<Void> saveQuest(Quest quest) {
+        return this.future(() -> {
+            this.implementation.saveQuest(quest);
+            return null;
+        });
+    }
+
+    public CompletableFuture<QuestPlayer> loadPlayer(UUID uniqueId) {
+        return this.future(() -> this.implementation.loadPlayer(uniqueId));
+    }
+
+    public CompletableFuture<Void> savePlayer(QuestPlayer player) {
+        return this.future(() -> {
+            this.implementation.savePlayer(player);
+            return null;
+        });
+    }
+
+    public CompletableFuture<Void> saveReward(Quest quest, QuestReward reward) {
+        return this.future(() -> {
+            this.implementation.saveReward(quest, reward);
+            return null;
+        });
+    }
+
+    public CompletableFuture<Void> deleteReward(QuestReward reward) {
+        return this.future(() -> {
+            this.implementation.deleteReward(reward);
             return null;
         });
     }

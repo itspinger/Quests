@@ -1,5 +1,6 @@
 package net.pinger.quests.conversation.prompt.block;
 
+import java.util.logging.Level;
 import net.pinger.quests.PlayerQuestsPlugin;
 import net.pinger.quests.file.configuration.MessageConfiguration;
 import net.pinger.quests.item.XMaterial;
@@ -60,8 +61,26 @@ public class CreateBlockQuestPrompt extends StringPrompt {
 
         final BlockData data = new BlockData(material);
         this.quest.setQuestData(data);
-        this.plugin.getInventoryManager().getEditQuestProvider(this.quest).open(player);
+        if (!this.quest.isComplete()) {
+            return this.cancelPrompt(player);
+        }
 
-        return Prompt.END_OF_CONVERSATION;
+        try {
+            this.plugin.getStorage().saveQuest(this.quest).get();
+        } catch (Exception e) {
+            this.plugin.getLogger().log(Level.SEVERE, "Failed to save quest", e);
+            this.configuration.send(player, "quest-save-fail", this.quest.getName());
+        }
+
+        // Add to the manager
+        this.plugin.getQuestManager().storeQuest(this.quest);
+
+        this.configuration.send(player, "quest-save-success", this.quest.getName());
+        return this.cancelPrompt(player);
+    }
+
+    private Prompt cancelPrompt(Player player) {
+        this.plugin.getInventoryManager().getEditQuestProvider(this.quest).open(player);
+        return null;
     }
 }

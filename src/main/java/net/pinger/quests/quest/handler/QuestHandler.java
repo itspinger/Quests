@@ -10,15 +10,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
 public abstract class QuestHandler implements Listener {
-    private final PlayerQuestsPlugin playerQuestsPlugin;
     private final PlayerQuestManager playerQuestManager;
     private final int goal;
 
     protected final Quest quest;
 
-    protected QuestHandler(PlayerQuestsPlugin playerQuestsPlugin, Quest quest) {
-        this.playerQuestsPlugin = playerQuestsPlugin;
-        this.playerQuestManager = playerQuestsPlugin.getPlayerQuestManager();
+    protected QuestHandler(PlayerQuestsPlugin plugin, Quest quest) {
+        this.playerQuestManager = plugin.getPlayerQuestManager();
         this.quest = quest;
         this.goal = quest.getGoal();
     }
@@ -49,10 +47,12 @@ public abstract class QuestHandler implements Listener {
                 }
 
                 progress.modifyProgress(modifier);
-                if (progress.getProgress() >= this.goal) {
-                    progress.setComplete(true);
-                    progress.modifyProgress(($1) -> this.goal);
+                if (progress.getProgress() < this.goal) {
+                    return progress;
                 }
+
+                progress.setComplete(true);
+                progress.modifyProgress(($1) -> this.goal);
 
                 final Player playerEntity = player.getPlayer();
                 if (playerEntity == null) {

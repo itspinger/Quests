@@ -9,6 +9,7 @@ import io.pnger.gui.pagination.GuiPagination;
 import net.pinger.quests.PlayerQuestsPlugin;
 import net.pinger.quests.gui.provider.EditQuestProvider;
 import net.pinger.quests.gui.provider.EditQuestRewardProvider;
+import net.pinger.quests.gui.provider.PlayerQuestsProvider;
 import net.pinger.quests.gui.provider.QuestRewardsProvider;
 import net.pinger.quests.gui.provider.QuestTypeProvider;
 import net.pinger.quests.gui.provider.QuestsProvider;
@@ -42,6 +43,7 @@ public class InventoryManager {
         return GuiBuilder.of()
             .manager(this.manager)
             .provider(new EditQuestProvider(this.plugin, quest))
+            .parent(this.getQuestsProvider())
             .title("&8Edit Quest > " + quest.getName())
             .build();
     }
@@ -51,6 +53,7 @@ public class InventoryManager {
             .manager(this.manager)
             .provider(new QuestTypeProvider(this.plugin, quest))
             .size(4, 9)
+            .parent(this.getEditQuestProvider(quest))
             .title(String.format("&8%s > Set Quest Type", quest.getName()))
             .build();
     }
@@ -60,16 +63,27 @@ public class InventoryManager {
             .manager(this.manager)
             .provider(new QuestRewardsProvider(this.plugin, quest))
             .size(6, 9)
+            .parent(this.getEditQuestProvider(quest))
             .title(String.format("&8%s > Reward", quest.getName()))
             .build();
     }
 
-    public GuiInventory getEditRewardProvider(QuestReward reward) {
+    public GuiInventory getEditRewardProvider(Quest quest, QuestReward reward) {
         return GuiBuilder.of()
             .manager(this.manager)
-            .provider(new EditQuestRewardProvider(this.plugin, reward))
+            .provider(new EditQuestRewardProvider(this.plugin, quest, reward))
+            .parent(this.getQuestRewardsProvider(quest))
             .size(4, 9)
             .title("&8Edit Reward")
+            .build();
+    }
+
+    public GuiInventory getPlayerQuestsProvider() {
+        return GuiBuilder.of()
+            .manager(this.manager)
+            .provider(new PlayerQuestsProvider(this.plugin))
+            .size(6, 9)
+            .title("&8Player Quests")
             .build();
     }
 

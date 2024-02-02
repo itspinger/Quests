@@ -8,19 +8,23 @@ import net.pinger.quests.PlayerQuestsPlugin;
 import net.pinger.quests.conversation.ConversationManager;
 import net.pinger.quests.conversation.prompt.reward.EditRewardCommandPrompt;
 import net.pinger.quests.conversation.prompt.reward.EditRewardNamePrompt;
+import net.pinger.quests.gui.InventoryManager;
 import net.pinger.quests.item.ItemBuilder;
 import net.pinger.quests.item.XMaterial;
+import net.pinger.quests.quest.Quest;
 import net.pinger.quests.reward.QuestReward;
 import org.bukkit.entity.Player;
 
 public class EditQuestRewardProvider implements GuiProvider {
     private final PlayerQuestsPlugin plugin;
     private final ConversationManager conversationManager;
+    private final Quest quest;
     private final QuestReward reward;
 
-    public EditQuestRewardProvider(PlayerQuestsPlugin plugin, QuestReward reward) {
+    public EditQuestRewardProvider(PlayerQuestsPlugin plugin, Quest quest, QuestReward reward) {
         this.plugin = plugin;
         this.conversationManager = plugin.getConversationManager();
+        this.quest = quest;
         this.reward = reward;
     }
 
@@ -37,7 +41,7 @@ public class EditQuestRewardProvider implements GuiProvider {
                 )
                 .build(),
             e -> {
-                this.conversationManager.createConversation(player, new EditRewardNamePrompt(this.plugin, this.reward));
+                this.conversationManager.createConversation(player, new EditRewardNamePrompt(this.plugin, this.quest, this.reward));
             }
         ));
 
@@ -53,9 +57,11 @@ public class EditQuestRewardProvider implements GuiProvider {
                 )
                 .build(),
             e -> {
-                this.conversationManager.createConversation(player, new EditRewardCommandPrompt(this.plugin, this.reward));
+                this.conversationManager.createConversation(player, new EditRewardCommandPrompt(this.plugin, this.quest, this.reward));
             }
         ));
+
+        InventoryManager.addReturnButton(3, 4, contents);
     }
 
 

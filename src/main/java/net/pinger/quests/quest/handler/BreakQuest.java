@@ -17,8 +17,8 @@ public class BreakQuest extends QuestHandler {
         super(playerQuestsPlugin, quest);
 
         final BlockData data = quest.getData();
-        this.material = data.getMaterial().parseMaterial();
-        this.data = data.getMaterial().getData();
+        this.material = data.getMaterial() == null ? null : data.getMaterial().parseMaterial();
+        this.data = data.getMaterial() == null ? 0 : data.getMaterial().getData();
     }
 
     @EventHandler

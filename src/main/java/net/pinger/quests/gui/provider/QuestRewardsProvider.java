@@ -5,10 +5,13 @@ import io.pnger.gui.item.GuiItem;
 import io.pnger.gui.pagination.GuiPagination;
 import io.pnger.gui.provider.GuiProvider;
 import io.pnger.gui.slot.GuiIteratorType;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
 import net.pinger.quests.PlayerQuestsPlugin;
+import net.pinger.quests.file.configuration.MessageConfiguration;
 import net.pinger.quests.gui.InventoryManager;
 import net.pinger.quests.item.ItemBuilder;
 import net.pinger.quests.item.XMaterial;
@@ -19,28 +22,44 @@ import org.bukkit.inventory.ItemStack;
 
 public class QuestRewardsProvider implements GuiProvider {
     private final PlayerQuestsPlugin plugin;
+    private final MessageConfiguration configuration;
     private final Quest quest;
 
     public QuestRewardsProvider(PlayerQuestsPlugin plugin, Quest quest) {
         this.plugin = plugin;
+        this.configuration = plugin.getConfiguration();
         this.quest = quest;
     }
 
     @Override
-    public void initialize(Player player, GuiContents contents) {
+    public void update(Player player, GuiContents contents) {
         final GuiPagination pagination = contents.getPagination();
-        final List<QuestReward> quests = this.quest.getRewards()
-            .stream()
-            .filter(QuestReward::isValid)
-            .collect(Collectors.toList());
-
+        final List<QuestReward> quests = this.quest.getRewards();
         final GuiItem[] items = new GuiItem[quests.size()];
 
         int i = 0;
         for (final QuestReward reward : quests) {
             // Get the item from the group
             items[i++] = GuiItem.of(this.getRewardItem(reward), e -> {
-                this.plugin.getInventoryManager().getEditRewardProvider(reward).open(player);
+                if (e.isLeftClick()) {
+                    this.plugin.getInventoryManager().getEditRewardProvider(this.quest, reward).open(player);
+                    return;
+                }
+
+                if (!e.isRightClick() || !e.isShiftClick()) {
+                    return;
+                }
+
+                try {
+                    this.plugin.getStorage().deleteReward(reward).get();
+                } catch (Exception ex) {
+                    this.plugin.getLogger().log(Level.SEVERE, "Failed to delete reward", ex);
+                    this.configuration.send(player, "quest-reward-delete-fail");
+                    return;
+                }
+
+                this.configuration.send(player, "quest-reward-delete-success", this.quest.getName());
+                this.quest.removeReward(reward);
             });
         }
 
@@ -56,7 +75,7 @@ public class QuestRewardsProvider implements GuiProvider {
                 final QuestReward reward = new QuestReward();
                 this.quest.addReward(reward);
 
-                this.plugin.getInventoryManager().getEditRewardProvider(reward).open(player);
+                this.plugin.getInventoryManager().getEditRewardProvider(this.quest, reward).open(player);
             }
         ));
 
@@ -74,7 +93,7 @@ public class QuestRewardsProvider implements GuiProvider {
             "",
             "&b❙ Reward",
             "&fDisplay Name: &b" + name,
-            "&fCommand: &b", Optional.ofNullable(reward.getCommand()).orElse("Not set")
+            "&fCommand: &b" + Optional.ofNullable(reward.getCommand()).orElse("Not set")
         );
 
         return builder.build();

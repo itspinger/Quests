@@ -19,6 +19,7 @@ import net.pinger.quests.player.QuestPlayer;
 import net.pinger.quests.quest.Quest;
 import net.pinger.quests.quest.QuestProgress;
 import net.pinger.quests.quest.QuestType;
+import net.pinger.quests.quest.data.BlockData;
 import net.pinger.quests.quest.data.QuestData;
 import net.pinger.quests.reward.QuestReward;
 import net.pinger.quests.storage.Storage;
@@ -60,7 +61,7 @@ public class SqlStorage implements StorageImplementation {
         try (final Connection connection = this.storage.getConnection()) {
             try (final PreparedStatement statement = connection.prepareStatement(LOAD_PLAYER)) {
                 statement.setString(1, uniqueId.toString());
-                try (final ResultSet set = statement.getResultSet()) {
+                try (final ResultSet set = statement.executeQuery()) {
                     if (!set.next()) {
                         return new QuestPlayer(uniqueId);
                     }
@@ -246,7 +247,7 @@ public class SqlStorage implements StorageImplementation {
                     statement.setString(3, quest.getMaterial().name());
                     statement.setString(4, GsonProvider.get().toJson(quest.getDescription()));
                     statement.setInt(5, quest.getGoal());
-                    statement.setString(6, GsonProvider.get().toJson(quest.getQuestData()));
+                    statement.setString(6, GsonProvider.get().toJson(quest.getQuestData(), quest.getQuestData().getClass()));
                     statement.executeUpdate();
 
                     try (final ResultSet set = statement.executeQuery("SELECT LAST_INSERT_ID();")) {
@@ -254,16 +255,19 @@ public class SqlStorage implements StorageImplementation {
                             quest.setId(set.getInt(1));
                         }
                     }
+
+                    for (final QuestReward reward : quest.getRewards()) {
+                        this.saveReward(connection, quest, reward);
+                    }
                 }
             }
         } else {
             try (final Connection connection = this.storage.getConnection()) {
                 try (final PreparedStatement statement = connection.prepareStatement(UPDATE_QUEST)) {
-                    statement.setString(1, quest.getQuestType().getName());
-                    statement.setString(2, quest.getMaterial().name());
-                    statement.setString(3, GsonProvider.get().toJson(quest.getDescription()));
-                    statement.setInt(4, quest.getGoal());
-                    statement.setInt(5, quest.getId());
+                    statement.setString(1, quest.getMaterial().name());
+                    statement.setString(2, GsonProvider.get().toJson(quest.getDescription()));
+                    statement.setInt(3, quest.getGoal());
+                    statement.setInt(4, quest.getId());
                     statement.executeUpdate();
                 }
             }
@@ -273,29 +277,33 @@ public class SqlStorage implements StorageImplementation {
     @Override
     public void saveReward(Quest quest, QuestReward reward) throws SQLException {
         try (final Connection connection = this.storage.getConnection()) {
-            if (reward.getId() == -1) {
-                try (final PreparedStatement statement = connection.prepareStatement(SAVE_REWARD)) {
-                    statement.setString(1, reward.getDisplayName());
-                    statement.setString(2, reward.getCommand());
-                    statement.setInt(3, quest.getId());
-                    statement.executeUpdate();
+            this.saveReward(connection, quest, reward);
+        }
+    }
 
-                    try (final ResultSet set = statement.executeQuery("SELECT LAST_INSERT_ID();")) {
-                        if (set.next()) {
-                            reward.setId(set.getInt(1));
-                        }
-                    }
-                }
-
-                return;
-            }
-
-            try (final PreparedStatement statement = connection.prepareStatement(UPDATE_REWARD)) {
+    private void saveReward(Connection connection, Quest quest, QuestReward reward) throws SQLException {
+        if (reward.getId() == -1) {
+            try (final PreparedStatement statement = connection.prepareStatement(SAVE_REWARD)) {
                 statement.setString(1, reward.getDisplayName());
                 statement.setString(2, reward.getCommand());
-                statement.setInt(3, reward.getId());
+                statement.setInt(3, quest.getId());
                 statement.executeUpdate();
+
+                try (final ResultSet set = statement.executeQuery("SELECT LAST_INSERT_ID();")) {
+                    if (set.next()) {
+                        reward.setId(set.getInt(1));
+                    }
+                }
             }
+
+            return;
+        }
+
+        try (final PreparedStatement statement = connection.prepareStatement(UPDATE_REWARD)) {
+            statement.setString(1, reward.getDisplayName());
+            statement.setString(2, reward.getCommand());
+            statement.setInt(3, reward.getId());
+            statement.executeUpdate();
         }
     }
 

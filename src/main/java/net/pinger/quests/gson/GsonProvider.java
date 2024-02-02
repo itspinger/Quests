@@ -8,9 +8,7 @@ import net.pinger.quests.quest.data.QuestData;
 public class GsonProvider {
     private static final Gson GSON = new GsonBuilder()
         .registerTypeAdapter(QuestData.class, new QuestDataAdapter())
-        .disableHtmlEscaping()
         .setPrettyPrinting()
-        .enableComplexMapKeySerialization()
         .create();
 
     public static Gson get() {

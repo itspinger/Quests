@@ -1,5 +1,6 @@
 package net.pinger.quests.conversation.prompt;
 
+import java.util.logging.Level;
 import net.pinger.quests.PlayerQuestsPlugin;
 import net.pinger.quests.file.configuration.MessageConfiguration;
 import net.pinger.quests.item.XMaterial;
@@ -12,13 +13,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class ChangeQuestIconPrompt extends StringPrompt {
-    private final PlayerQuestsPlugin playerQuestsPlugin;
+    private final PlayerQuestsPlugin plugin;
     private final MessageConfiguration configuration;
     private final Quest quest;
 
-    public ChangeQuestIconPrompt(PlayerQuestsPlugin playerQuestsPlugin, Quest quest) {
-        this.playerQuestsPlugin = playerQuestsPlugin;
-        this.configuration = playerQuestsPlugin.getConfiguration();
+    public ChangeQuestIconPrompt(PlayerQuestsPlugin plugin, Quest quest) {
+        this.plugin = plugin;
+        this.configuration = plugin.getConfiguration();
         this.quest = quest;
     }
 
@@ -45,13 +46,29 @@ public class ChangeQuestIconPrompt extends StringPrompt {
         }
 
         final XMaterial material = XMaterial.matchXMaterial(item);
-        this.quest.setMaterial(material);
-        this.playerQuestsPlugin.getInventoryManager().getEditQuestProvider(this.quest).open(player);
 
-        return Prompt.END_OF_CONVERSATION;
+        this.quest.setMaterial(material);
+        if (this.quest.getId() == -1) {
+            return this.cancelPrompt(player);
+        }
+
+        try {
+            this.plugin.getStorage().saveQuest(this.quest).get();
+        } catch (Exception e) {
+            this.plugin.getLogger().log(Level.SEVERE, "Failed to save quest", e);
+            this.configuration.send(player, "quest-save-fail", this.quest.getName());
+        }
+
+        this.configuration.send(player, "quest-save-success", this.quest.getName());
+        return this.cancelPrompt(player);
     }
 
     private boolean isConfirmWord(String word) {
         return word.equalsIgnoreCase("Done") || word.equalsIgnoreCase("Confirm");
+    }
+
+    private Prompt cancelPrompt(Player player) {
+        this.plugin.getInventoryManager().getEditQuestProvider(this.quest).open(player);
+        return null;
     }
 }

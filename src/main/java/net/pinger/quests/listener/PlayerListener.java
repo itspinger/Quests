@@ -21,7 +21,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        this.playerQuestManager.removePlayer(event.getPlayer().getUniqueId());
+        this.playerQuestManager.savePlayer(event.getPlayer().getUniqueId());
     }
 
 }

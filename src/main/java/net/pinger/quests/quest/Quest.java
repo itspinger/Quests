@@ -2,6 +2,7 @@ package net.pinger.quests.quest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import net.pinger.quests.item.XMaterial;
 import net.pinger.quests.quest.data.QuestData;
 import net.pinger.quests.reward.QuestReward;
@@ -23,6 +24,7 @@ public class Quest {
     public Quest(int id, String name, int goal) {
         this.id = id;
         this.name = name;
+        this.goal = goal;
         this.material = XMaterial.SUNFLOWER;
         this.description = new ArrayList<>();
         this.rewards = new ArrayList<>();
@@ -41,12 +43,14 @@ public class Quest {
     }
 
     public void reward(Player player) {
+        System.out.println("Rewarding player " + player.getPlayer());
+
         for (final QuestReward reward : this.getRewards()) {
             reward.execute(player);
         }
 
         // TODO: Send message as well?
-        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+        player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
     }
 
     @SuppressWarnings("unchecked")
@@ -62,7 +66,7 @@ public class Quest {
      */
 
     public boolean isComplete() {
-        return this.getQuestType() != null && this.getQuestData() != null;
+        return this.getQuestType() != null && this.getQuestData() != null && this.goal > 0;
     }
 
     public String getName() {
@@ -123,5 +127,14 @@ public class Quest {
 
     public int getId() {
         return this.id;
+    }
+
+    @Override
+    public int hashCode() {
+        if (this.id != -1) {
+            return Objects.hashCode(this.id);
+        }
+
+        return Objects.hashCode(this.name);
     }
 }
