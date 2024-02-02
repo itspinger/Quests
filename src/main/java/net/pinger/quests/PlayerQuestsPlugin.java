@@ -53,11 +53,13 @@ public class PlayerQuestsPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (this.storage == null) {
-            return;
+        if (this.playerQuestManager != null) {
+            this.playerQuestManager.shutdown();
         }
 
-        this.storage.shutdown();
+        if (this.storage != null) {
+            this.storage.shutdown();
+        }
     }
 
     public void addDefaultConfig() {

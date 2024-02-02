@@ -6,6 +6,7 @@ import java.util.Objects;
 import net.pinger.quests.item.XMaterial;
 import net.pinger.quests.quest.data.QuestData;
 import net.pinger.quests.reward.QuestReward;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -43,14 +44,11 @@ public class Quest {
     }
 
     public void reward(Player player) {
-        System.out.println("Rewarding player " + player.getPlayer());
-
         for (final QuestReward reward : this.getRewards()) {
             reward.execute(player);
         }
 
-        // TODO: Send message as well?
-        player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
+        player.sendMessage(ChatColor.GREEN + "You've successfully completed quest " + this.name + " and received your rewards!");
     }
 
     @SuppressWarnings("unchecked")

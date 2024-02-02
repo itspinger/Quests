@@ -44,6 +44,16 @@ public class QuestPlayer {
         consumer.accept(this.getQuestsMap());
     }
 
+    public Map.Entry<Quest, QuestProgress> getActiveQuest() {
+        for (final Map.Entry<Quest, QuestProgress> entry : this.questsMap.entrySet()) {
+            if (entry.getValue().isActive()) {
+                return entry;
+            }
+        }
+
+        return null;
+    }
+
     public boolean isActiveQuest(Quest quest) {
         return this.getProgress(quest).isActive();
     }

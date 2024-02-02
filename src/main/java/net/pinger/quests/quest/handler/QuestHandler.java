@@ -52,6 +52,7 @@ public abstract class QuestHandler implements Listener {
                 }
 
                 progress.setComplete(true);
+                progress.setActive(false);
                 progress.modifyProgress(($1) -> this.goal);
 
                 final Player playerEntity = player.getPlayer();

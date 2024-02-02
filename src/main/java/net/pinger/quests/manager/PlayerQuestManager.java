@@ -55,4 +55,9 @@ public class PlayerQuestManager {
         this.userMap.remove(id);
     }
 
+    public void shutdown() {
+        for (final Player player : Bukkit.getOnlinePlayers()) {
+            this.savePlayer(player.getUniqueId());
+        }
+    }
 }

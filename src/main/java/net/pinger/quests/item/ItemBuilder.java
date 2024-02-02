@@ -257,12 +257,12 @@ public class ItemBuilder {
             meta.setLore(lore);
         }
 
+        for (final Map.Entry<Enchantment, Integer> entry : this.enchantments.entrySet()) {
+            meta.addEnchant(entry.getKey(), entry.getValue(), true);
+        }
+
         // Add item flags to this item
         meta.addItemFlags(this.itemFlags.toArray(new ItemFlag[0]));
-
-        // Add all needed enchantments
-        // We prefer to use unsafeEnchantments
-        this.item.addUnsafeEnchantments(this.enchantments);
         this.item.setItemMeta(meta);
         return this.item;
     }

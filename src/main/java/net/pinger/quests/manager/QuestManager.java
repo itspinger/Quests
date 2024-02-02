@@ -117,8 +117,6 @@ public class QuestManager {
         final QuestHandler handler = quest.getQuestType().createHandler(this.plugin, quest);
         this.handlers.put(quest.getId(), handler);
         this.plugin.getServer().getPluginManager().registerEvents(handler, this.plugin);
-        System.out.println("Creating handler for quest name " + quest.getName());
-        System.out.println(handler);
     }
 
     private void loadQuestsTask() {

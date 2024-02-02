@@ -8,11 +8,10 @@ import io.pnger.gui.slot.GuiIteratorType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 import net.pinger.quests.PlayerQuestsPlugin;
-import net.pinger.quests.conversation.prompt.CreateQuestPrompt;
 import net.pinger.quests.gui.InventoryManager;
 import net.pinger.quests.item.ItemBuilder;
-import net.pinger.quests.item.XMaterial;
 import net.pinger.quests.manager.PlayerQuestManager;
 import net.pinger.quests.manager.QuestManager;
 import net.pinger.quests.player.QuestPlayer;
@@ -20,6 +19,7 @@ import net.pinger.quests.quest.Quest;
 import net.pinger.quests.quest.QuestProgress;
 import net.pinger.quests.quest.QuestType;
 import net.pinger.quests.quest.data.QuestData;
+import net.pinger.quests.reward.QuestReward;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -47,9 +47,35 @@ public class PlayerQuestsProvider implements GuiProvider {
             final QuestProgress progress = player.getProgress(quest);
             items[i++] = GuiItem.of(this.getItemStack(progress, quest), e -> {
                 if (e.isLeftClick()) {
+                    if (progress.isActive()) {
+                        return;
+                    }
+
+                    if (player.getActiveQuest() != null) {
+                        this.plugin.getConfiguration().send(p, "quest-must-disable-active");
+                        return;
+                    }
+
+                    if (progress.isComplete()) {
+                        this.plugin.getConfiguration().send(p, "quest-completed");
+                        return;
+                    }
+
                     progress.setActive(true);
+                    this.plugin.getConfiguration().send(p, "quest-started", quest.getName());
                     return;
                 }
+
+                if (!e.isRightClick() || !e.isShiftClick()) {
+                    return;
+                }
+
+                if (!progress.isActive()) {
+                    return;
+                }
+
+                progress.setActive(false);
+                this.plugin.getConfiguration().send(p, "quest-disabled", quest.getName());
             });
         }
 
@@ -65,7 +91,7 @@ public class PlayerQuestsProvider implements GuiProvider {
         builder.name("&b&l" + quest.getName());
 
         if (progress.isActive()) {
-            builder.enchant(Enchantment.DAMAGE_ALL).flag();
+            builder.enchant(Enchantment.DURABILITY, 0).flag();
         }
 
         final List<String> desc = new ArrayList<>();
@@ -83,6 +109,25 @@ public class PlayerQuestsProvider implements GuiProvider {
             desc.add("&fNot set");
         } else {
             desc.addAll(quest.getDescription());
+        }
+
+        desc.add("");
+
+        desc.add("&b❙ Rewards");
+        if (!quest.getRewards().isEmpty()) {
+            final List<String> mapped = quest.getRewards()
+                .stream()
+                .filter(QuestReward::isValid)
+                .map(reward -> "&f" + reward.getDisplayName())
+                .collect(Collectors.toList());
+
+            if (mapped.isEmpty()) {
+                desc.add("&fNo rewards");
+            } else {
+                desc.addAll(mapped);
+            }
+        } else {
+            desc.add("&fNo rewards");
         }
 
         desc.add("");
