@@ -74,7 +74,7 @@ public class QuestManager {
             final Entry<Integer, Quest> next = it.next();
             final QuestHandler handler = this.handlers.remove(next.getKey());
             if (handler == null) {
-                return;
+                continue;
             }
 
             HandlerList.unregisterAll(handler);
@@ -83,6 +83,16 @@ public class QuestManager {
 
         this.quests.putAll(quests);
         this.quests.forEach(($, quest) -> this.registerQuestHandler(quest));
+    }
+
+    public void loadQuest(Quest quest) {
+        final QuestHandler handler = this.handlers.remove(quest.getId());
+        if (handler != null) {
+            HandlerList.unregisterAll(handler);
+        }
+
+        this.quests.put(quest.getId(), quest);
+        this.registerQuestHandler(quest);
     }
 
     public List<Quest> getQuests() {

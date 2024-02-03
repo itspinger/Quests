@@ -51,7 +51,6 @@ public class QuestsProvider implements GuiProvider {
                     return;
                 }
 
-                System.out.println("Deleting 1");
                 if (quest.getId() == -1) {
                     this.questManager.removeQuest(quest);
                     this.plugin.getConfiguration().send(player, "quest-delete-success", quest.getName());
@@ -60,7 +59,6 @@ public class QuestsProvider implements GuiProvider {
 
                 try {
                     this.plugin.getStorage().deleteQuest(quest).get();
-                    System.out.println("Deleting 2");
                 } catch (Exception ex) {
                     this.plugin.getLogger().log(Level.SEVERE, "Failed to save quest", ex);
                     this.plugin.getConfiguration().send(player, "quest-delete-fail", quest.getName());

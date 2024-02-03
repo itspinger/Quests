@@ -14,6 +14,8 @@ public interface StorageImplementation {
 
     void savePlayer(QuestPlayer player) throws SQLException;
 
+    Quest loadQuest(int id) throws SQLException;
+
     void loadAllQuests() throws SQLException;
 
     void saveQuest(Quest quest) throws SQLException;

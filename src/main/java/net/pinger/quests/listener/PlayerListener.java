@@ -15,15 +15,19 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerListener implements Listener {
+    private final PlayerQuestsPlugin plugin;
     private final PlayerQuestManager playerQuestManager;
 
-    public PlayerListener(PlayerQuestsPlugin playerQuestsPlugin) {
-        this.playerQuestManager = playerQuestsPlugin.getPlayerQuestManager();
+    public PlayerListener(PlayerQuestsPlugin plugin) {
+        this.plugin = plugin;
+        this.playerQuestManager = plugin.getPlayerQuestManager();
     }
 
     @EventHandler
     public void onAsyncJoin(AsyncPlayerPreLoginEvent event) {
-        this.playerQuestManager.loadPlayer(event.getUniqueId());
+        this.plugin.getStorage().loadAllQuests().thenRun(() -> {
+            this.playerQuestManager.loadPlayer(event.getUniqueId());
+        }).join();
     }
 
     @EventHandler

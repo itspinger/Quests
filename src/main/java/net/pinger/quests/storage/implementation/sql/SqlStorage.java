@@ -37,6 +37,7 @@ public class SqlStorage implements StorageImplementation {
     private static final String EXISTS_PLAYER_QUEST = "SELECT * FROM pquests_players_quests_progress WHERE quest_id = ? AND player_uuid = ?;";
     private static final String LOAD_QUEST_REWARDS = "SELECT * FROM pquests_rewards WHERE quest_id = ?;";
     private static final String SELECT_QUESTS = "SELECT * FROM pquests_quests;";
+    private static final String LOAD_QUEST = "SELECT * FROM pquests_quests WHERE quest_id = ?;";
     private static final String DELETE_QUEST_REWARDS = "DELETE FROM pquests_rewards WHERE quest_id = ?;";
     private static final String DELETE_QUEST_PROGRESS = "DELETE FROM pquests_players_quests_progress WHERE quest_id = ?;";
     private static final String DELETE_QUEST = "DELETE FROM pquests_quests WHERE quest_id = ?;";
@@ -94,6 +95,12 @@ public class SqlStorage implements StorageImplementation {
     private Map.Entry<Quest, QuestProgress> loadPlayerQuest(ResultSet set) throws SQLException {
         final int questId = set.getInt("quest_id");
         final Quest quest = this.plugin.getQuestManager().getQuest(questId);
+
+        if (quest == null) {
+            this.loadQuest(questId);
+        }
+
+        // If quest is null even after trying to fetch it, return null
         if (quest == null) {
             return null;
         }
@@ -115,14 +122,8 @@ public class SqlStorage implements StorageImplementation {
                 statement.executeUpdate();
             }
 
-            final Map<Quest, QuestProgress> progressMap = player.getQuestsMap();
-            for (final Map.Entry<Quest, QuestProgress> entry : progressMap.entrySet()) {
-                final Quest quest = entry.getKey();
-                if (quest.getId() == -1 || this.plugin.getQuestManager().getQuest(quest.getId()) == null) {
-                    continue;
-                }
-
-                final QuestProgress progress = entry.getValue();
+            for (final Quest quest : this.plugin.getQuestManager().getPlayerQuests()) {
+                final QuestProgress progress = player.getProgress(quest);
                 this.savePlayerQuest(connection, player, quest, progress);
             }
         }
@@ -181,6 +182,28 @@ public class SqlStorage implements StorageImplementation {
         }
 
         this.plugin.getQuestManager().loadQuests(quests);
+    }
+
+    @Override
+    public Quest loadQuest(int id) throws SQLException {
+        try (final Connection connection = this.storage.getConnection()) {
+            try (final PreparedStatement statement = connection.prepareStatement(LOAD_QUEST)) {
+                statement.setInt(1, id);
+                try (final ResultSet set = statement.executeQuery()) {
+                    if (set.next()) {
+                        final Quest quest = this.loadQuestData(connection, set);
+                        if (quest == null) {
+                            return null;
+                        }
+
+                        this.plugin.getQuestManager().loadQuest(quest);
+                        return quest;
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 
     private Quest loadQuestData(Connection c, ResultSet set) throws SQLException {
