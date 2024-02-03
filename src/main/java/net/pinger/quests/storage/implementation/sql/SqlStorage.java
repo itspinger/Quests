@@ -19,7 +19,6 @@ import net.pinger.quests.player.QuestPlayer;
 import net.pinger.quests.quest.Quest;
 import net.pinger.quests.quest.QuestProgress;
 import net.pinger.quests.quest.QuestType;
-import net.pinger.quests.quest.data.BlockData;
 import net.pinger.quests.quest.data.QuestData;
 import net.pinger.quests.reward.QuestReward;
 import net.pinger.quests.storage.Storage;
@@ -119,9 +118,11 @@ public class SqlStorage implements StorageImplementation {
             final Map<Quest, QuestProgress> progressMap = player.getQuestsMap();
             for (final Map.Entry<Quest, QuestProgress> entry : progressMap.entrySet()) {
                 final Quest quest = entry.getKey();
-                final QuestProgress progress = entry.getValue();
+                if (quest.getId() == -1 || this.plugin.getQuestManager().getQuest(quest.getId()) == null) {
+                    continue;
+                }
 
-                // Save the quest
+                final QuestProgress progress = entry.getValue();
                 this.savePlayerQuest(connection, player, quest, progress);
             }
         }

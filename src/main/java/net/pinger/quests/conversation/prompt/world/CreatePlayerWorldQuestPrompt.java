@@ -1,21 +1,24 @@
-package net.pinger.quests.conversation.prompt.entity;
+package net.pinger.quests.conversation.prompt.world;
 
 import java.util.logging.Level;
 import net.pinger.quests.PlayerQuestsPlugin;
 import net.pinger.quests.file.configuration.MessageConfiguration;
+import net.pinger.quests.item.XMaterial;
 import net.pinger.quests.quest.Quest;
-import net.pinger.quests.quest.data.PlayerData;
+import net.pinger.quests.quest.data.BlockData;
+import net.pinger.quests.quest.data.WorldData;
+import org.bukkit.Material;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
-import org.bukkit.conversations.ValidatingPrompt;
+import org.bukkit.conversations.StringPrompt;
 import org.bukkit.entity.Player;
 
-public class CreatePlayerKillQuestPrompt extends ValidatingPrompt {
+public class CreatePlayerWorldQuestPrompt extends StringPrompt {
     private final PlayerQuestsPlugin plugin;
     private final MessageConfiguration configuration;
     private final Quest quest;
 
-    public CreatePlayerKillQuestPrompt(PlayerQuestsPlugin plugin, Quest quest) {
+    public CreatePlayerWorldQuestPrompt(PlayerQuestsPlugin plugin, Quest quest) {
         this.plugin = plugin;
         this.configuration = plugin.getConfiguration();
         this.quest = quest;
@@ -23,23 +26,19 @@ public class CreatePlayerKillQuestPrompt extends ValidatingPrompt {
 
     @Override
     public String getPromptText(ConversationContext conversationContext) {
-        return this.configuration.of("quest-player-prompt");
+        return this.configuration.of("quest-world-prompt");
     }
 
     @Override
-    protected boolean isInputValid(ConversationContext conversationContext, String input) {
-        return input.length() <= 16;
-    }
-
-    @Override
-    protected Prompt acceptValidatedInput(ConversationContext conversationContext, String input) {
-        String playerName = input;
-        if (input.equalsIgnoreCase("any")) {
-            playerName = null;
+    public Prompt acceptInput(ConversationContext conversationContext, String input) {
+        if (input == null || input.isEmpty()) {
+            return this;
         }
 
         final Player player = (Player) conversationContext.getForWhom();
-        final PlayerData data = new PlayerData(playerName);
+        final String world = input.equalsIgnoreCase("Any") ? null : input;
+
+        final WorldData data = new WorldData(world);
         this.quest.setQuestData(data);
         if (!this.quest.isComplete()) {
             return this.cancelPrompt(player);

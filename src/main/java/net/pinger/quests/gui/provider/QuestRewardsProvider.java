@@ -86,7 +86,7 @@ public class QuestRewardsProvider implements GuiProvider {
     private ItemStack getRewardItem(QuestReward reward) {
         final ItemBuilder builder = new ItemBuilder(XMaterial.PAPER);
         final String name = reward.getDisplayName() != null ? reward.getDisplayName() : "Name not set";
-        builder.name(name);
+        builder.name("&f" + name);
         builder.addLore(
             "&bLeft - Click &7to edit this reward",
             "&bShift - Right Click &7to delete this reward",

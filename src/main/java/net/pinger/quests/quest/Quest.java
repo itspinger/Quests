@@ -48,7 +48,7 @@ public class Quest {
             reward.execute(player);
         }
 
-        player.sendMessage(ChatColor.GREEN + "You've successfully completed quest " + this.name + " and received your rewards!");
+        player.sendMessage(ChatColor.GREEN + "You've successfully completed quest " + ChatColor.YELLOW + this.name + ChatColor.GREEN + " and received your rewards!");
     }
 
     @SuppressWarnings("unchecked")

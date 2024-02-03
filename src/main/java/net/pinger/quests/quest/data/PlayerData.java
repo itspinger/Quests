@@ -1,25 +1,24 @@
 package net.pinger.quests.quest.data;
 
 import java.util.List;
-import java.util.UUID;
 
 public class PlayerData extends QuestData {
-    private final UUID id;
+    private final String playerName;
 
-    public PlayerData(UUID id) {
+    public PlayerData(String playerName) {
         super(QuestDataType.PLAYER_DATA);
 
-        this.id = id;
+        this.playerName = playerName;
     }
 
     @Override
     public List<String> getDescription() {
         return List.of(
-            "&fPlayer: &b".concat(this.id == null ? "Any" : this.id.toString())
+            "&fPlayer: &b".concat(this.playerName == null ? "Any" : this.playerName)
         );
     }
 
-    public UUID getId() {
-        return this.id;
+    public String getPlayerName() {
+        return this.playerName;
     }
 }

@@ -3,7 +3,9 @@ package net.pinger.quests.quest.data;
 public enum QuestDataType {
 
     BLOCK_DATA(BlockData.class),
-    PLAYER_DATA(PlayerData.class);
+    PLAYER_DATA(PlayerData.class),
+    MOB_DATA(EntityData.class),
+    WORLD_DATA(WorldData.class);
 
     private final Class<? extends QuestData> classifier;
 

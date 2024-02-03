@@ -7,6 +7,7 @@ import io.pnger.gui.provider.GuiProvider;
 import io.pnger.gui.slot.GuiIteratorType;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import net.pinger.quests.PlayerQuestsPlugin;
 import net.pinger.quests.conversation.ConversationManager;
 import net.pinger.quests.conversation.prompt.CreateQuestPrompt;
@@ -21,27 +22,53 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class QuestsProvider implements GuiProvider {
-    private final PlayerQuestsPlugin playerQuestsPlugin;
+    private final PlayerQuestsPlugin plugin;
     private final QuestManager questManager;
     private final ConversationManager conversationManager;
 
-    public QuestsProvider(PlayerQuestsPlugin playerQuestsPlugin) {
-        this.playerQuestsPlugin = playerQuestsPlugin;
-        this.questManager = playerQuestsPlugin.getQuestManager();
-        this.conversationManager = playerQuestsPlugin.getConversationManager();
+    public QuestsProvider(PlayerQuestsPlugin plugin) {
+        this.plugin = plugin;
+        this.questManager = plugin.getQuestManager();
+        this.conversationManager = plugin.getConversationManager();
     }
 
     @Override
     public void update(Player player, GuiContents contents) {
         final GuiPagination pagination = contents.getPagination();
-        final List<Quest> quests = new ArrayList<>(this.questManager.getQuests());
+        final List<Quest> quests = this.questManager.getQuests();
         final GuiItem[] items = new GuiItem[quests.size()];
 
         int i = 0;
         for (final Quest quest : quests) {
             // Get the item from the group
             items[i++] = GuiItem.of(this.getItemStack(quest), e -> {
-                this.playerQuestsPlugin.getInventoryManager().getEditQuestProvider(quest).open(player);
+                if (e.isLeftClick()) {
+                    this.plugin.getInventoryManager().getEditQuestProvider(quest).open(player);
+                    return;
+                }
+
+                if (!e.isShiftClick() || !e.isRightClick()) {
+                    return;
+                }
+
+                System.out.println("Deleting 1");
+                if (quest.getId() == -1) {
+                    this.questManager.removeQuest(quest);
+                    this.plugin.getConfiguration().send(player, "quest-delete-success", quest.getName());
+                    return;
+                }
+
+                try {
+                    this.plugin.getStorage().deleteQuest(quest).get();
+                    System.out.println("Deleting 2");
+                } catch (Exception ex) {
+                    this.plugin.getLogger().log(Level.SEVERE, "Failed to save quest", ex);
+                    this.plugin.getConfiguration().send(player, "quest-delete-fail", quest.getName());
+                    return;
+                }
+
+                this.questManager.removeQuest(quest);
+                this.plugin.getConfiguration().send(player, "quest-delete-success", quest.getName());
             });
         }
 
@@ -54,7 +81,7 @@ public class QuestsProvider implements GuiProvider {
                 .lore("&7Click to create a new quest")
                 .build(),
             e -> {
-                this.conversationManager.createConversation(player, new CreateQuestPrompt(this.playerQuestsPlugin));
+                this.conversationManager.createConversation(player, new CreateQuestPrompt(this.plugin));
             }
         ));
 
@@ -67,6 +94,9 @@ public class QuestsProvider implements GuiProvider {
         builder.name("&b&l" + quest.getName());
 
         final List<String> desc = new ArrayList<>();
+        desc.add("&bLeft - Click &7to edit this quest");
+        desc.add("&bShift - Right Click &7to delete this quest");
+
         if (!quest.isComplete()) {
             desc.add("");
             desc.add("&c&lNOT COMPLETE");

@@ -92,6 +92,13 @@ public class Storage {
         });
     }
 
+    public CompletableFuture<Void> deleteQuest(Quest quest) {
+        return this.future(() -> {
+            this.implementation.deleteQuest(quest);
+            return null;
+        });
+    }
+
     public CompletableFuture<QuestPlayer> loadPlayer(UUID uniqueId) {
         return this.future(() -> this.implementation.loadPlayer(uniqueId));
     }
